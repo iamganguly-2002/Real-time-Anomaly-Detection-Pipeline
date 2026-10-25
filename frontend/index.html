@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anomaly Detection Demo</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: #111827;
+        --card: #1f2937;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --good: #34d399;
+        --bad: #f87171;
+        --accent: #60a5fa;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0f172a, #111827);
+        color: var(--text);
+      }
+
+      .container {
+        max-width: 980px;
+        margin: 40px auto;
+        padding: 24px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+
+      .header h1 {
+        margin-bottom: 10px;
+        font-size: 2.1rem;
+      }
+
+      .header p {
+        color: var(--muted);
+      }
+
+      .panel {
+        background: rgba(17, 24, 39, 0.9);
+        border: 1px solid rgba(96, 165, 250, 0.2);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field label {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .field input {
+        padding: 12px 14px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        border-radius: 10px;
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--text);
+        font-size: 1rem;
+      }
+
+      button {
+        margin-top: 8px;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .status {
+        margin-top: 26px;
+        padding: 18px;
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+      }
+
+      .status h3 {
+        margin-top: 0;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-weight: 700;
+        margin-top: 10px;
+      }
+
+      .badge.normal {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--good);
+      }
+
+      .badge.anomaly {
+        background: rgba(248, 113, 113, 0.15);
+        color: var(--bad);
+      }
+
+      .result-box {
+        margin-top: 16px;
+        font-size: 1rem;
+        color: var(--muted);
+      }
+
+      .model-name {
+        color: var(--accent);
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Anomaly Detection Demo</h1>
+        <p>Sensor-based anomaly classification using selected ML model</p>
+      </div>
+
+      <div class="panel">
+        <div class="grid">
+          <div class="field">
+            <label for="temperature">Temperature</label>
+            <input id="temperature" type="number" value="25" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="humidity">Humidity</label>
+            <input id="humidity" type="number" value="55" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="pressure">Pressure</label>
+            <input id="pressure" type="number" value="1013" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="vibration">Vibration</label>
+            <input id="vibration" type="number" value="0.5" step="0.1" />
+          </div>
+        </div>
+
+        <button id="submitBtn">Predict</button>
+
+        <div class="status">
+          <h3>Prediction Result</h3>
+          <div id="resultText">Waiting for a sensor reading...</div>
+          <div id="statusBadge" class="badge">-</div>
+          <div id="modelInfo" class="result-box">Model: not loaded</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const submitBtn = document.getElementById('submitBtn');
+      const resultText = document.getElementById('resultText');
+      const statusBadge = document.getElementById('statusBadge');
+      const modelInfo = document.getElementById('modelInfo');
+
+      async function predict() {
+        const payload = {
+          records: [{
+            temperature: Number(document.getElementById('temperature').value),
+            humidity: Number(document.getElementById('humidity').value),
+            pressure: Number(document.getElementById('pressure').value),
+            vibration: Number(document.getElementById('vibration').value)
+          }]
+        };
+
+        try {
+          const response = await fetch('http://127.0.0.1:8001/predict', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.detail || 'Request failed');
+          }
+
+          const item = data.predictions[0];
+          const isAnomaly = item.anomaly;
+
+          resultText.textContent = isAnomaly
+            ? 'This sensor reading is classified as an anomaly.'
+            : 'This sensor reading is classified as normal.';
+
+          statusBadge.textContent = isAnomaly ? 'ANOMALY' : 'NORMAL';
+          statusBadge.className = `badge ${isAnomaly ? 'anomaly' : 'normal'}`;
+          modelInfo.textContent = `Model: ${data.model_name}`;
+        } catch (error) {
+          resultText.textContent = 'Error connecting to the backend API.';
+          statusBadge.textContent = 'ERROR';
+          statusBadge.className = 'badge anomaly';
+          modelInfo.textContent = error.message;
+        }
+      }
+
+      submitBtn.addEventListener('click', predict);
+    </script>
+  </body>
+</html>

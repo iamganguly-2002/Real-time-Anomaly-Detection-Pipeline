@@ -6,9 +6,18 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Local agent/editor metadata
+.agents/
+.claude/
+.vscode/
+.idea/
+*.swp
+*.swo
 
 # Docker
 .dockerignore
@@ -16,12 +25,6 @@ venv.bak/
 # Logs
 *.log
 logs/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
 
 # OS
 .DS_Store
@@ -35,3 +38,6 @@ es_data/
 
 # Environment variables
 .env
+
+# Local helper files
+run_command.txt

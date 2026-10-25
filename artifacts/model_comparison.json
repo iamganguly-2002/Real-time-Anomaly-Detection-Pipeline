@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-10-25T13:47:05.294203+00:00",
+  "dataset_path": "/home/indranil/Desktop/Real-time-Anomaly-Detection-Pipeline/data/sensor_anomalies_dataset.csv",
+  "rows": 25000,
+  "feature_columns": [
+    "temperature",
+    "humidity",
+    "pressure",
+    "vibration"
+  ],
+  "best_model": "Elliptic Envelope",
+  "best_model_metrics": {
+    "accuracy": 0.9926,
+    "precision": 0.9236453201970444,
+    "recall": 0.984251968503937,
+    "f1": 0.9529860228716646
+  },
+  "all_results": [
+    {
+      "model_name": "Isolation Forest",
+      "metrics": {
+        "accuracy": 0.9878,
+        "precision": 0.8921568627450981,
+        "recall": 0.9553805774278216,
+        "f1": 0.9226869455006337
+      }
+    },
+    {
+      "model_name": "Local Outlier Factor",
+      "metrics": {
+        "accuracy": 0.8606,
+        "precision": 0.105,
+        "recall": 0.11023622047244094,
+        "f1": 0.10755441741357234
+      }
+    },
+    {
+      "model_name": "One-Class SVM",
+      "metrics": {
+        "accuracy": 0.9594,
+        "precision": 0.7192118226600985,
+        "recall": 0.7664041994750657,
+        "f1": 0.7420584498094028
+      }
+    },
+    {
+      "model_name": "DBSCAN",
+      "metrics": {
+        "accuracy": 0.9512,
+        "precision": 0.9928057553956835,
+        "recall": 0.36220472440944884,
+        "f1": 0.5307692307692308
+      }
+    },
+    {
+      "model_name": "Elliptic Envelope",
+      "metrics": {
+        "accuracy": 0.9926,
+        "precision": 0.9236453201970444,
+        "recall": 0.984251968503937,
+        "f1": 0.9529860228716646
+      }
+    }
+  ]
+}
